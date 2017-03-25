@@ -52,8 +52,7 @@ $(document).ready(function() {
 
   var Fake = [
     'Hi there, I\'m your personal Concierge. How can I help?',
-    'Nice to meet you',
-    'How are you?',
+    'Great. I can help you with that.',
     'Not too bad, thanks',
     'What do you do?',
     'That\'s awesome',
