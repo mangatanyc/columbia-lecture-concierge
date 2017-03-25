@@ -9,7 +9,7 @@
     <meta name="description" content="This is a sample concierge application built on AWS.">
     <meta name="author" content="Andrei Papancea">
 
-    <title>Cover Template for Bootstrap</title>
+    <title>Concierge</title>
 
     <!-- Bootstrap core CSS -->
     <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
@@ -19,6 +19,7 @@
 
     <!-- Custom styles for this template -->
     <link href="./assets/css/cover.css" rel="stylesheet">
+    <link href="./assets/css/main.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -28,6 +29,82 @@
   </head>
 
   <body>
+
+    <script>
+      // This is called with the results from from FB.getLoginStatus().
+      function statusChangeCallback(response) {
+        console.log('statusChangeCallback');
+        console.log(response);
+        // The response object is returned with a status field that lets the
+        // app know the current login status of the person.
+        // Full docs on the response object can be found in the documentation
+        // for FB.getLoginStatus().
+        if (response.status === 'connected') {
+          // Logged into your app and Facebook.
+          testAPI();
+        } else {
+          // The person is not logged into your app or we are unable to tell.
+          document.getElementById('status').innerHTML = 'Please log ' +
+            'into this app.';
+        }
+      }
+
+      // This function is called when someone finishes with the Login
+      // Button.  See the onlogin handler attached to it in the sample
+      // code below.
+      function checkLoginState() {
+        FB.getLoginStatus(function(response) {
+          statusChangeCallback(response);
+        });
+      }
+
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '267843130329368',
+          cookie     : true,  // enable cookies to allow the server to access
+                              // the session
+          xfbml      : true,  // parse social plugins on this page
+          version    : 'v2.8' // use graph api version 2.8
+        });
+
+        // Now that we've initialized the JavaScript SDK, we call
+        // FB.getLoginStatus().  This function gets the state of the
+        // person visiting this page and can return one of three states to
+        // the callback you provide.  They can be:
+        //
+        // 1. Logged into your app ('connected')
+        // 2. Logged into Facebook, but not your app ('not_authorized')
+        // 3. Not logged into Facebook and can't tell if they are logged into
+        //    your app or not.
+        //
+        // These three cases are handled in the callback function.
+
+        FB.getLoginStatus(function(response) {
+          statusChangeCallback(response);
+        });
+
+      };
+
+      // Load the SDK asynchronously
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+
+      // Here we run a very simple test of the Graph API after login is
+      // successful.  See statusChangeCallback() for when this call is made.
+      function testAPI() {
+        console.log('Welcome!  Fetching your information.... ');
+        FB.api('/me', function(response) {
+          console.log('Successful login for: ' + response.name);
+          document.getElementById('status').innerHTML =
+            'Welcome, ' + response.name + '! Click <a href="chat.html" class="chat-link">here</a> to chat.';
+        });
+      }
+    </script>
 
     <div class="site-wrapper">
 
@@ -41,7 +118,7 @@
               <nav>
                 <ul class="nav masthead-nav">
                   <li class="active"><a href="#">Home</a></li>
-                  <li><a href="#">Contact</a></li>
+                  <li><a href="chat.html">Chat</a></li>
                 </ul>
               </nav>
             </div>
@@ -51,7 +128,17 @@
             <h1 class="cover-heading">A Tailored Shopping Experience</h1>
             <p class="lead">Concierge is a best-in-breed, NLP-powered concierge service. We specialize in e-commerce and travel services. <br><br>Sign up below to get early access.</p>
             <p class="lead">
-              <a href="#" class="btn btn-lg btn-default">Sign up</a>
+              <!--
+                Below we include the Login Button social plugin. This button uses
+                the JavaScript SDK to present a graphical Login button that triggers
+                the FB.login() function when clicked.
+              -->
+
+              <fb:login-button size="xlarge" auto-logout-link="true" scope="public_profile,email" onlogin="checkLoginState();">
+              </fb:login-button>
+
+              <div id="status">
+              </div>
             </p>
           </div>
 
