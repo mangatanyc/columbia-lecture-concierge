@@ -28,8 +28,6 @@ exports.handler = (event, context, callback) => {
     });
   } catch (error) {
     console.log(error);
-    // using JSON.stringify, so that API Gateway
-    // can use regex to detect the error pattern
-    callback(JSON.stringify(error));
+    callback(error);
   }
 };
