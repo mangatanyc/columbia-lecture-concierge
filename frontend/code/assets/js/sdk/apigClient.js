@@ -83,6 +83,24 @@ apigClientFactory.newClient = function (config) {
 
 
 
+    apigClient.checkoutPost = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+        apiGateway.core.utils.assertParametersDefined(params, ['body'], ['body']);
+
+        var checkoutPostRequest = {
+            verb: 'post'.toUpperCase(),
+            path: pathComponent + uritemplate('/checkout').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+
+
+        return apiGatewayClient.makeRequest(checkoutPostRequest, authType, additionalParams, config.apiKey);
+    };
+
+
     apigClient.nluPost = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
 
@@ -98,6 +116,24 @@ apigClientFactory.newClient = function (config) {
 
 
         return apiGatewayClient.makeRequest(nluPostRequest, authType, additionalParams, config.apiKey);
+    };
+
+
+    apigClient.nluOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+
+        var nluOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/nlu').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+
+
+        return apiGatewayClient.makeRequest(nluOptionsRequest, authType, additionalParams, config.apiKey);
     };
 
 

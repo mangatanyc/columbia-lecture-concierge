@@ -84,7 +84,7 @@ Messages
       -ms-flex: 1 1 auto;
           flex: 1 1 auto;
   color: #000;
-  overflow: hidden;
+  overflow: scroll;
   position: relative;
   width: 100%;
 }

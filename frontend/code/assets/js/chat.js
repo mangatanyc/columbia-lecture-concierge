@@ -1,11 +1,37 @@
+var checkout = {};
+
 $(document).ready(function() {
   var $messages = $('.messages-content'),
     d, h, m,
     i = 0;
 
+  checkout = function(payload) {
+    console.log('checkout');
+    return sdk.checkoutPost({}, {
+        productId: 'test',
+        deliveryAddress: 'test',
+        deliveryDate: 'test'
+      }, {})
+      .then((response) => {
+        console.log('checkout api call returned', response);
+
+        var data = response.data;
+
+        if (data.message) {
+          insertResponseMessage(data.message);
+        } else {
+          insertResponseMessage('Oops, something went wrong. Please try again.');
+        }
+      })
+      .catch((error) => {
+        console.log('an error occurred during checkout');
+        console.log(error);
+      });
+  }
+
   $(window).load(function() {
     $messages.mCustomScrollbar();
-    insertUnstructuredMessage('Hi there, I\'m your personal Concierge. How can I help?');
+    insertResponseMessage('Hi there, I\'m your personal Concierge. How can I help?');
     // setTimeout(function() {
     //   fakeMessage();
     // }, 100);
@@ -18,7 +44,7 @@ $(document).ready(function() {
     });
   }
 
-  function setDate(){
+  function setDate() {
     d = new Date()
     if (m != d.getMinutes()) {
       m = d.getMinutes();
@@ -54,24 +80,37 @@ $(document).ready(function() {
         var data = response.data;
 
         if (data.messages && data.messages.length > 0) {
-          console.log('received '+data.messages.length+' messages');
+          console.log('received ' + data.messages.length + ' messages');
 
           var messages = data.messages;
 
           for (var message of messages) {
             if (message.type === 'unstructured') {
-              insertUnstructuredMessage(message.unstructured.text);
+              insertResponseMessage(message.unstructured.text);
+            } else if (message.type === 'structured' && message.structured.type === 'product') {
+              var html = '';
+
+              insertResponseMessage(message.structured.text);
+
+              setTimeout(function() {
+                html = '<img src="' + message.structured.payload.imageUrl + '" witdth="200" height="240" class="thumbnail" /><b>' +
+                  message.structured.payload.name + '<br>$' +
+                  message.structured.payload.price +
+                  '</b><br><a href="#" onclick="' + message.structured.payload.clickAction + '()">' +
+                  message.structured.payload.buttonLabel + '</a>';
+                insertResponseMessage(html);
+              }, 1100);
             } else {
               console.log('not implemented');
             }
           }
         } else {
-          insertUnstructuredMessage('Oops, something went wrong. Please try again.');
+          insertResponseMessage('Oops, something went wrong. Please try again.');
         }
       })
       .catch((error) => {
         console.log('an error occurred', error);
-        insertUnstructuredMessage('Oops, something went wrong. Please try again.');
+        insertResponseMessage('Oops, something went wrong. Please try again.');
       });
 
     // setTimeout(function() {
@@ -90,17 +129,17 @@ $(document).ready(function() {
     }
   })
 
-  function insertUnstructuredMessage(text) {
+  function insertResponseMessage(content) {
     $('<div class="message loading new"><figure class="avatar"><img src="http://flask.com/wp-content/uploads/dos-equis-most-interesting-guy-in-the-world-300x300.jpeg" /></figure><span></span></div>').appendTo($('.mCSB_container'));
     updateScrollbar();
 
     setTimeout(function() {
       $('.message.loading').remove();
-      $('<div class="message new"><figure class="avatar"><img src="http://flask.com/wp-content/uploads/dos-equis-most-interesting-guy-in-the-world-300x300.jpeg" /></figure>' + text + '</div>').appendTo($('.mCSB_container')).addClass('new');
+      $('<div class="message new"><figure class="avatar"><img src="http://flask.com/wp-content/uploads/dos-equis-most-interesting-guy-in-the-world-300x300.jpeg" /></figure>' + content + '</div>').appendTo($('.mCSB_container')).addClass('new');
       setDate();
       updateScrollbar();
       i++;
-    }, 1000 + (Math.random() * 20) * 100);
+    }, 500);
   }
 
   /*
