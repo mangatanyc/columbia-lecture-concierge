@@ -56,6 +56,49 @@
                     }
                 }
             }
+        },
+        "/checkout": {
+            "post": {
+                "summary": "The checkout api.",
+                "description": "This API takes in one a productId and places an order for\nthe given product.\n",
+                "tags": [
+                    "Checkout"
+                ],
+                "operationId": "checkout",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CheckoutRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The checkout response.",
+                        "schema": {
+                            "$ref": "#/definitions/CheckoutResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -128,6 +171,32 @@
                 "timestamp": {
                     "type": "string",
                     "format": "datetime"
+                }
+            }
+        },
+        "CheckoutRequest": {
+            "type": "object",
+            "properties": {
+                "productId": {
+                    "type": "string"
+                },
+                "deliveryAddress": {
+                    "type": "string"
+                },
+                "deliveryDate": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "CheckoutResponse": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
