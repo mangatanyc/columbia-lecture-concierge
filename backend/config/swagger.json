@@ -1,0 +1,147 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Concierge API",
+        "description": "A sample Concierge application, built during the Cloud and Big Data course.",
+        "version": "1.0.0"
+    },
+    "host": "api.mydomain.com",
+    "schemes": [
+        "https"
+    ],
+    "basePath": "/v1",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/nlu": {
+            "post": {
+                "summary": "The endpoint for the Natural Language Understanding API.",
+                "description": "This API takes in one or more messages from the client and returns\none or more messages as a response. The API leverages the NLP\nbackend functionality, paired with state and profile information\nand returns a context-aware reply.\n",
+                "tags": [
+                    "NLU"
+                ],
+                "operationId": "sendMessage",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/NluRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An NLU response",
+                        "schema": {
+                            "$ref": "#/definitions/NluResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "NluRequest": {
+            "type": "object",
+            "properties": {
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Message"
+                    }
+                }
+            }
+        },
+        "NluResponse": {
+            "type": "object",
+            "properties": {
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Message"
+                    }
+                }
+            }
+        },
+        "Message": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "structured": {
+                    "$ref": "#/definitions/StructuredMessage"
+                },
+                "unstructured": {
+                    "$ref": "#/definitions/UnstructuredMessage"
+                }
+            }
+        },
+        "StructuredMessage": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "object"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "UnstructuredMessage": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
