@@ -2,7 +2,7 @@
 
 CURRENT_PATH=$(pwd)
 
-REGION="us-east-1"
+REGION="us-east-2"
 AWS_PROFILE="concierge-demo"
 STACK_NAME="columbia-concierge"
 
