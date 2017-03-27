@@ -64,7 +64,7 @@ exports.handler = (event, context, callback) => {
           statusMessage = 'I experienced some issues while processing your order. Please try again later';
         }
 
-        return sendSmsNotification('Thank you for your order! Your confirmation number is F86yH7p. We\'ll send you another email once it shipped.');
+        return sendSmsNotification('Thank you for your order! Your confirmation number is '+(Math.floor(1000000+Math.random()*9000000))+'. We\'ll send you another email once it shipped.');
       })
       .then((result) => {
         console.log('responding with status message', statusMessage);

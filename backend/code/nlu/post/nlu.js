@@ -55,9 +55,11 @@ exports.buildBuyFlowersStructuredMessage = function() {
       text: 'I have just the right bouquet. Check it out:',
       type: 'product',
       payload: {
-        imageUrl: 'https://....',
+        imageUrl: 'https://static.mangata.io/photos/F1260B26-32C9-4442-8EA0-29A51D1F6010-5.jpg',
         buttonLabel: 'Order',
         clickAction: 'checkout',
+        name: 'Ruby Red Roses',
+        price: 50.00,
         productId: '1234567890'
       },
       timestamp: new Date().toISOString()
