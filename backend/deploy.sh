@@ -8,7 +8,7 @@ STACK_NAME="columbia-concierge"
 
 FUNC="all"
 
-usage() { echo "Usage: $0 -c {all | PATH_TO_FUNCTION_CODE}" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-c {PATH_TO_FUNCTION_CODE}]" 1>&2; exit 1; }
 
 function update_lambda()
 {
