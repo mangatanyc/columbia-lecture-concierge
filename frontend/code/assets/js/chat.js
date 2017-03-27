@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  var sdk = apigClientFactory.newClient();
   var $messages = $('.messages-content'),
     d, h, m,
     i = 0;
@@ -25,6 +26,18 @@ $(document).ready(function() {
     }
   }
 
+  function callNluApi(message) {
+    // params, body, additionalParams
+    return sdk.nluPost({}, {
+      messages: [{
+        type: 'unstructured',
+        unstructured: {
+          text: message
+        }
+      }]
+    }, {});
+  }
+
   function insertMessage() {
     msg = $('.message-input').val();
     if ($.trim(msg) == '') {
@@ -34,9 +47,36 @@ $(document).ready(function() {
     setDate();
     $('.message-input').val(null);
     updateScrollbar();
-    setTimeout(function() {
-      fakeMessage();
-    }, 1000 + (Math.random() * 20) * 100);
+
+    callNluApi(msg)
+      .then((response) => {
+        console.log(response);
+        var data = response.data;
+
+        if (data.messages && data.messages.length > 0) {
+          console.log('received '+data.messages.length+' messages');
+
+          var messages = data.messages;
+
+          for (var message of messages) {
+            if (message.type === 'unstructured') {
+              insertUnstructuredMessage(message.unstructured.text);
+            } else {
+              console.log('not implemented');
+            }
+          }
+        } else {
+          insertUnstructuredMessage('Oops, something went wrong. Please try again.');
+        }
+      })
+      .catch((error) => {
+        console.log('an error occurred', error);
+        insertUnstructuredMessage('Oops, something went wrong. Please try again.');
+      });
+
+    // setTimeout(function() {
+    //   fakeMessage();
+    // }, 1000 + (Math.random() * 20) * 100);
   }
 
   $('.message-submit').click(function() {
@@ -50,6 +90,20 @@ $(document).ready(function() {
     }
   })
 
+  function insertUnstructuredMessage(text) {
+    $('<div class="message loading new"><figure class="avatar"><img src="http://flask.com/wp-content/uploads/dos-equis-most-interesting-guy-in-the-world-300x300.jpeg" /></figure><span></span></div>').appendTo($('.mCSB_container'));
+    updateScrollbar();
+
+    setTimeout(function() {
+      $('.message.loading').remove();
+      $('<div class="message new"><figure class="avatar"><img src="http://flask.com/wp-content/uploads/dos-equis-most-interesting-guy-in-the-world-300x300.jpeg" /></figure>' + text + '</div>').appendTo($('.mCSB_container')).addClass('new');
+      setDate();
+      updateScrollbar();
+      i++;
+    }, 1000 + (Math.random() * 20) * 100);
+  }
+
+  /*
   var Fake = [
     'Hi there, I\'m your personal Concierge. How can I help?',
     'Great. I can help you with that.',
@@ -83,5 +137,6 @@ $(document).ready(function() {
     }, 1000 + (Math.random() * 20) * 100);
 
   }
+  */
 
 });

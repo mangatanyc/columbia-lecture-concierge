@@ -2,13 +2,14 @@
 
 CURRENT_PATH=$(pwd)
 AWS_PROFILE="concierge-demo"
+BUCKET_NAME="concierge.demo.mangata.io"
 
 function upload_website_to_s3()
 {
   printf "~ uploading app to S3 ..."
 
   myCmd="aws s3 cp code/ \
-  s3://concierge.demo.1s0s.io \
+  s3://$BUCKET_NAME \
   --profile $AWS_PROFILE --recursive"
 
   message=$(${myCmd[@]} 2>&1 | grep -i 'error')
