@@ -21,6 +21,8 @@
     <link href="./assets/css/cover.css" rel="stylesheet">
     <link href="./assets/css/main.css" rel="stylesheet">
 
+    <script src="./assets/js/aws-sdk.min.js"></script>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -41,7 +43,19 @@
         // for FB.getLoginStatus().
         if (response.status === 'connected') {
           // Logged into your app and Facebook.
-          testAPI();
+          // Add the Facebook access token to the Cognito credentials login map.
+          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: 'us-east-2:81a2354d-8771-48e9-9d4c-15b49b50a303',
+            Logins: {
+              'graph.facebook.com': response.authResponse.accessToken
+            }
+          });
+
+          // Obtain AWS credentials
+          AWS.config.credentials.get(function(){
+              // Access AWS resources here.
+              console.log('obtained AWS credentials');
+          });
         } else {
           // The person is not logged into your app or we are unable to tell.
           document.getElementById('status').innerHTML = 'Please log ' +

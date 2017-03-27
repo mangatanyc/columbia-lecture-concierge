@@ -1,14 +1,14 @@
 $(document).ready(function() {
-  var sdk = apigClientFactory.newClient();
   var $messages = $('.messages-content'),
     d, h, m,
     i = 0;
 
   $(window).load(function() {
     $messages.mCustomScrollbar();
-    setTimeout(function() {
-      fakeMessage();
-    }, 100);
+    insertUnstructuredMessage('Hi there, I\'m your personal Concierge. How can I help?');
+    // setTimeout(function() {
+    //   fakeMessage();
+    // }, 100);
   });
 
   function updateScrollbar() {
