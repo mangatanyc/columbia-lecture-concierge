@@ -1,0 +1,263 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+
+  "Description": "Cloud Formation Stack Template for a sample Concierge Application, built using microservices",
+
+  "Parameters": {
+    "ApiStageParam": {
+      "Type": "String",
+      "Default": "dev",
+      "AllowedValues": ["dev", "qa", "prod"]
+    },
+    "ConfigurationS3BucketName": {
+      "Type": "String",
+      "Default": "<YOUR_S3_BUCKET_URL>"
+    },
+    "StackNameParam": {
+      "Type": "String",
+      "Default": "concierge-stack"
+    },
+    "RegionParam": {
+      "Type": "String",
+      "Default": "us-east-1",
+      "AllowedValues": ["us-east-1", "us-east-2", "us-west-1", "us-west-2"]
+    }
+  },
+
+  "Resources": {
+
+    "ApiGateway": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "BodyS3Location": {
+          "Bucket": {
+            "Ref": "ConfigurationS3BucketName"
+          },
+          "Key": {
+            "Fn::Join": ["/", ["configuration", "swagger.json"]]
+          }
+        }
+      },
+      "DependsOn": "ApiGatewayRole"
+    },
+    "ApiGatewayRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["apigateway.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }, {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["lambda.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "root",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "*",
+              "Resource": "*"
+            }]
+          }
+        }]
+      }
+    },
+
+    "NLULambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["apigateway.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }, {
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["lambda.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "root",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "lambda:InvokeFunction",
+              "Resource": {
+                "Fn::GetAtt": ["NluFunction", "Arn"]
+              }
+            }, {
+              "Effect": "Allow",
+              "Action": "lambda:InvokeFunction",
+              "Resource": {
+                "Fn::GetAtt": ["CheckoutFunction", "Arn"]
+              }
+            }]
+          }
+        }]
+      },
+      "DependsOn": [
+        "NluFunction",
+        "CheckoutFunction"
+      ]
+    },
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": ["lambda.amazonaws.com"]
+            },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": "root",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "*",
+              "Resource": "*"
+            }]
+          }
+        }]
+      }
+    },
+
+    "NluFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Join": ["-", [{
+            "Ref": "StackNameParam"
+          }, {
+            "Ref": "ApiStageParam"
+          }, "nlu-post"]]
+        },
+        "Environment": {
+          "Variables": {
+            "stage": {
+              "Ref": "ApiStageParam"
+            }
+          }
+        },
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ConfigurationS3BucketName"
+          },
+          "S3Key": {
+            "Fn::Join": ["/", ["repos", {
+                "Ref": "ApiStageParam"
+              },
+              "nlu-post.zip"
+            ]]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": ["NLULambdaExecutionRole", "Arn"]
+        },
+        "Runtime": "nodejs4.3",
+        "Handler": "index.handler"
+      },
+      "DependsOn": "NLULambdaExecutionRole"
+    },
+    "CheckoutFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Join": ["-", [{
+            "Ref": "StackNameParam"
+          }, {
+            "Ref": "ApiStageParam"
+          }, "checkout-post"]]
+        },
+        "Environment": {
+          "Variables": {
+            "stage": {
+              "Ref": "ApiStageParam"
+            }
+          }
+        },
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ConfigurationS3BucketName"
+          },
+          "S3Key": {
+            "Fn::Join": ["/", ["repos", {
+                "Ref": "ApiStageParam"
+              },
+              "checkout-post.zip"
+            ]]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Runtime": "nodejs4.3",
+        "Handler": "index.handler"
+      },
+      "DependsOn": "LambdaExecutionRole"
+    },
+
+    "ProcessOrderFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Join": ["-", [{
+            "Ref": "StackNameParam"
+          }, {
+            "Ref": "ApiStageParam"
+          }, "process-order"]]
+        },
+        "Environment": {
+          "Variables": {
+            "stage": {
+              "Ref": "ApiStageParam"
+            }
+          }
+        },
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ConfigurationS3BucketName"
+          },
+          "S3Key": {
+            "Fn::Join": ["/", ["repos", {
+                "Ref": "ApiStageParam"
+              },
+              "process-order.zip"
+            ]]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Runtime": "nodejs4.3",
+        "Handler": "index.handler"
+      },
+      "DependsOn": "LambdaExecutionRole"
+    }
+  }
+}
