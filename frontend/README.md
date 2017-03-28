@@ -2,7 +2,7 @@
 
 ### About ###
 
-Visit the demo application at http://concierge.demo.mangata.io.amazonaws.com
+Visit the demo application at http://concierge.demo.mangata.io.s3-website-us-east-1.amazonaws.com
 
 ### Deployment ###
 
