@@ -15,7 +15,7 @@
     },
     "StackNameParam": {
       "Type": "String",
-      "Default": "concierge-stack"
+      "Default": "<STACK_NAME>"
     },
     "RegionParam": {
       "Type": "String",
@@ -74,51 +74,6 @@
       }
     },
 
-    "NLULambdaExecutionRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-              "Service": ["apigateway.amazonaws.com"]
-            },
-            "Action": ["sts:AssumeRole"]
-          }, {
-            "Effect": "Allow",
-            "Principal": {
-              "Service": ["lambda.amazonaws.com"]
-            },
-            "Action": ["sts:AssumeRole"]
-          }]
-        },
-        "Path": "/",
-        "Policies": [{
-          "PolicyName": "root",
-          "PolicyDocument": {
-            "Version": "2012-10-17",
-            "Statement": [{
-              "Effect": "Allow",
-              "Action": "lambda:InvokeFunction",
-              "Resource": {
-                "Fn::GetAtt": ["NluFunction", "Arn"]
-              }
-            }, {
-              "Effect": "Allow",
-              "Action": "lambda:InvokeFunction",
-              "Resource": {
-                "Fn::GetAtt": ["CheckoutFunction", "Arn"]
-              }
-            }]
-          }
-        }]
-      },
-      "DependsOn": [
-        "NluFunction",
-        "CheckoutFunction"
-      ]
-    },
     "LambdaExecutionRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -161,6 +116,9 @@
           "Variables": {
             "stage": {
               "Ref": "ApiStageParam"
+            },
+            "region": {
+              "Ref": "RegionParam"
             }
           }
         },
@@ -177,12 +135,12 @@
           }
         },
         "Role": {
-          "Fn::GetAtt": ["NLULambdaExecutionRole", "Arn"]
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
         },
         "Runtime": "nodejs4.3",
         "Handler": "index.handler"
       },
-      "DependsOn": "NLULambdaExecutionRole"
+      "DependsOn": "LambdaExecutionRole"
     },
     "CheckoutFunction": {
       "Type": "AWS::Lambda::Function",
@@ -198,6 +156,23 @@
           "Variables": {
             "stage": {
               "Ref": "ApiStageParam"
+            },
+            "region": {
+              "Ref": "RegionParam"
+            },
+            "queueUrl": {
+              "Fn::Join": ["/", [{
+                "Fn::Join": [".", [
+                  "https://sqs", {
+                    "Ref": "RegionParam"
+                  },
+                  "amazonaws.com"
+                ]]
+              }, {
+                "Ref": "AWS::AccountId"
+              }, {
+                "Fn::GetAtt": ["ProcessOrderQueue", "QueueName"]
+              }]]
             }
           }
         },
@@ -221,7 +196,6 @@
       },
       "DependsOn": "LambdaExecutionRole"
     },
-
     "ProcessOrderFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -236,6 +210,23 @@
           "Variables": {
             "stage": {
               "Ref": "ApiStageParam"
+            },
+            "region": {
+              "Ref": "RegionParam"
+            },
+            "queueUrl": {
+              "Fn::Join": ["/", [{
+                "Fn::Join": [".", [
+                  "https://sqs", {
+                    "Ref": "RegionParam"
+                  },
+                  "amazonaws.com"
+                ]]
+              }, {
+                "Ref": "AWS::AccountId"
+              }, {
+                "Fn::GetAtt": ["ProcessOrderQueue", "QueueName"]
+              }]]
             }
           }
         },
@@ -258,6 +249,30 @@
         "Handler": "index.handler"
       },
       "DependsOn": "LambdaExecutionRole"
+    },
+
+    "ProcessOrderQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "MessageRetentionPeriod": 14400,
+        "QueueName": {
+          "Fn::Join": ["-", [{
+            "Ref": "StackNameParam"
+          }, {
+            "Ref": "ApiStageParam"
+          }, "pending-orders-queue"]]
+        },
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": ["ProcessOrderUndeliveredQueue", "Arn"]
+          },
+          "maxReceiveCount": 5
+        }
+      }
+    },
+    "ProcessOrderUndeliveredQueue": {
+      "Type": "AWS::SQS::Queue"
     }
+
   }
 }

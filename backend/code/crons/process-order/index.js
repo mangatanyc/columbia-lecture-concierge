@@ -2,8 +2,8 @@
 
 const AWS = require('aws-sdk');
 
+const SNS = new AWS.SNS({ region: process.env.stage });
 const SQS = new AWS.SQS({ apiVersion: '2012-11-05' });
-const SNS = new AWS.SNS({ region: 'us-east-1' });
 const Lambda = new AWS.Lambda({ apiVersion: '2015-03-31' });
 
 

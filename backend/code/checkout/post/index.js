@@ -5,7 +5,7 @@ let sns = new AWS.SNS({
   region: 'us-east-1'
 });
 let sqs = new AWS.SQS({
-  region: 'us-east-2'
+  region: process.env.stage
 });
 let stripe = require('./stripe.js');
 
