@@ -83,9 +83,10 @@
     </div>
 
     <script>
+      var fbAppId = '267843130329368';
+
       var sdk = {};
       var region = 'us-east-2';
-      var fbAppId = '267843130329368';
       var identityPoolId = 'us-east-2:81a2354d-8771-48e9-9d4c-15b49b50a303';
 
       // This is called with the results from from FB.getLoginStatus().
@@ -130,6 +131,11 @@
                 $('.chat').removeClass('hide');
               }
           });
+
+          // sdk = apigClientFactory.newClient({
+          //   region: 'us-east-2'
+          // });
+          // $('.chat').removeClass('hide');
         } else {
           // The person is not logged into your app or we are unable to tell.
           document.getElementById('status').innerHTML = 'Please log ' +

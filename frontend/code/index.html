@@ -43,19 +43,7 @@
         // for FB.getLoginStatus().
         if (response.status === 'connected') {
           // Logged into your app and Facebook.
-          // Add the Facebook access token to the Cognito credentials login map.
-          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'us-east-2:81a2354d-8771-48e9-9d4c-15b49b50a303',
-            Logins: {
-              'graph.facebook.com': response.authResponse.accessToken
-            }
-          });
-
-          // Obtain AWS credentials
-          AWS.config.credentials.get(function(){
-              // Access AWS resources here.
-              console.log('obtained AWS credentials');
-          });
+          testAPI();
         } else {
           // The person is not logged into your app or we are unable to tell.
           document.getElementById('status').innerHTML = 'Please log ' +

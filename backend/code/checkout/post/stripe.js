@@ -2,6 +2,8 @@
 
 exports = module.exports = {};
 
+// a mock Stripe library
+
 exports.checkout = function(request) {
   console.log('checking out with Stripe');
 
@@ -9,8 +11,10 @@ exports.checkout = function(request) {
   // out of scope for the demo
 
   return new Promise((resolve, reject) => {
-    resolve({
-      success: true
-    });
+    setTimeout(function() {
+      resolve({
+        success: true
+      });
+    }, 2000);
   });
 };
