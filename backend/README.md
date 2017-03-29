@@ -2,7 +2,7 @@
 
 ### Stack Deployment ###
 
-Go to the root of the repository and run the following command, while specifying the correct environment:
+Go to the root of the repository and run the following command, while specifying the required parameters:
 
 ```
 #!bash
@@ -20,7 +20,7 @@ To delete the stack, run the following command:
 
 ### Code Deployment ###
 
-Go to the root of the repository and run the following command, while specifying the correct environment:
+Go to the root of the repository and run the following command, while specifying the required parameters:
 
 ```
 #!bash
