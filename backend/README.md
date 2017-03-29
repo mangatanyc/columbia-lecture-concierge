@@ -9,13 +9,13 @@ Go to the root of the repository and run the following command, while specifying
 
 # if you want to deploy the entire codebase
 
-./deploy.sh
+./deploy.sh -e {dev, qa, prod} -p {aws profile} -r {aws region}
 
 # if you want to deploy just one API endpoint
 
-./deploy.sh -c ./code/{PATH-TO-CODE}
+./deploy.sh -c ./code/{PATH-TO-CODE} -e {dev, qa, prod} -p {aws profile} -r {aws region}
 # example:
-# ./deploy.sh -c ./code/nlu/post
+# ./deploy.sh -c ./code/nlu/post -e dev -p concierge-demo -r us-east-1
 ```
 
 ### Development ###
