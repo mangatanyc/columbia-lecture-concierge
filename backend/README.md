@@ -1,6 +1,24 @@
 # Concierge | Backend #
 
-### Deployment ###
+### Stack Deployment ###
+
+Go to the root of the repository and run the following command, while specifying the correct environment:
+
+```
+#!bash
+# make sure to specify the S3 bucket on line 13
+
+./deploy_stack.sh -e {dev, qa, prod} -p {aws profile} -r {aws region}
+```
+To delete the stack, run the following command:
+
+```
+#!bash
+
+./deploy_stack.sh -e {dev, qa, prod} -p {aws profile} -r {aws region} -d
+```
+
+### Code Deployment ###
 
 Go to the root of the repository and run the following command, while specifying the correct environment:
 
@@ -8,6 +26,7 @@ Go to the root of the repository and run the following command, while specifying
 #!bash
 
 # if you want to deploy the entire codebase
+# make sure to specify the S3 bucket on line 13
 
 ./deploy.sh -e {dev, qa, prod} -p {aws profile} -r {aws region}
 
