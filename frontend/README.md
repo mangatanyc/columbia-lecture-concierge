@@ -6,9 +6,10 @@ Visit the demo application at http://concierge.demo.mangata.io.s3-website-us-eas
 
 ### Deployment ###
 
-Go to the root of the repository and run the following command, while specifying the correct environment:
+Go to the root of the repository and run the following command, while specifying the correct profile:
 
 ```
 #!bash
+# make sure to specify the target S3 bucket on line 6
 
-./deploy.sh
+./deploy.sh -p {aws profile}
