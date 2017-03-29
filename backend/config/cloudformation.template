@@ -251,6 +251,34 @@
       "DependsOn": "LambdaExecutionRole"
     },
 
+    "ScheduledRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "execute ProcessOrderFunction every minute",
+        "ScheduleExpression": "rate(1 minute)",
+        "State": "ENABLED",
+        "Targets": [{
+          "Arn": {
+            "Fn::GetAtt": ["ProcessOrderFunction", "Arn"]
+          },
+          "Id": "ProcessOrderFunction"
+        }]
+      }
+    },
+    "PermissionForEventsToInvokeLambda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProcessOrderFunction"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": ["ScheduledRule", "Arn"]
+        }
+      }
+    },
+
     "ProcessOrderQueue": {
       "Type": "AWS::SQS::Queue",
       "Properties": {

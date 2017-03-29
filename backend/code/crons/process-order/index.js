@@ -33,6 +33,8 @@ const sendSmsNotification = function(message) {
   return new Promise((resolve, reject) => {
     SNS.publish({
       Message: 'Thank you for your order! Your confirmation number is ' + (Math.floor(1000000 + Math.random() * 9000000)) + '. We\'ll send you another email once it shipped.',
+      // TODO: setup a phone number as an environment variable in Lambda,
+      // or pass and extract the phone number from the SQS message itself
       PhoneNumber: process.env.phoneNumber
     }, (err) => err ? reject(err) : resolve());
   });

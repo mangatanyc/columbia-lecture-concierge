@@ -25,16 +25,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/NluRequest"
-                        }
+                "parameters": [{
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/NluRequest"
                     }
-                ],
+                }],
                 "responses": {
                     "200": {
                         "description": "An NLU response",
@@ -68,16 +66,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/CheckoutRequest"
-                        }
+                "parameters": [{
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/CheckoutRequest"
                     }
-                ],
+                }],
                 "responses": {
                     "200": {
                         "description": "The checkout response.",
